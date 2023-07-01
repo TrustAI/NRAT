@@ -17,7 +17,7 @@ def l2_norm(x):
 
 
 def at_loss(model, x_natural, y, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, 
-                attack='linf-pgd'):       # 可能改
+                attack='linf-pgd'):      
     """
     AT training (Zhang et al, 2019).
     """
