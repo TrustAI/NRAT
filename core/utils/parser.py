@@ -28,13 +28,13 @@ def parser_train():
                         help='Description of experiment. It will be used to name directories.')
 
     parser.add_argument('-m', '--model', choices=MODELS, default='resnet18', help='Model architecture to be used.')
-    # 标准化默认是false
+    
     parser.add_argument('--normalize', type=str2bool, default=False, help='Normalize input.')
     parser.add_argument('--pretrained-file', type=str, default=None, help='Pretrained weights file name.')
 
     parser.add_argument('-na', '--num-adv-epochs', type=int, default=200, help='Number of adversarial training epochs.')
     parser.add_argument('--adv-eval-freq', type=int, default=1, help='Adversarial evaluation frequency (in epochs).')
-    # 每个epoch都对test set评估对抗acc
+  
     parser.add_argument('--beta', default=None, type=float, help='Stability regularization, i.e., 1/lambda in TRADES.')
     
     parser.add_argument('--lr', type=float, default=0.1, help='Learning rate for optimizer (SGD).')
