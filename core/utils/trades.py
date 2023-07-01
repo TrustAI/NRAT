@@ -17,12 +17,12 @@ def l2_norm(x):
 
 
 def trades_loss(model, x_natural, y, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=4.0, 
-                attack='linf-pgd'):       # 可能改
+                attack='linf-pgd'):      
     """
     TRADES training (Zhang et al, 2019).
     """
     # define KL-loss
-    criterion_kl = nn.KLDivLoss(reduction='sum')  # 原版是size_average=False
+    criterion_kl = nn.KLDivLoss(reduction='sum')  
     model.eval()
     batch_size = len(x_natural)
     # generate adversarial example
