@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 import mlconfig
-mlconfig.register(torch.nn.CrossEntropyLoss)    # 用NCE+RCE
+mlconfig.register(torch.nn.CrossEntropyLoss)    
 
 if torch.cuda.is_available():
     torch.backends.cudnn.benchmark = True
