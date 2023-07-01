@@ -7,7 +7,7 @@ from core.metrics import accuracy
 
 
 def mart_loss(model, x_natural, y, optimizer, step_size=0.007, epsilon=0.031, perturb_steps=10, beta=6.0, 
-              attack='linf-pgd'):     # 跟原版一样
+              attack='linf-pgd'):     
     """
     MART training (Wang et al, 2020).
     """
