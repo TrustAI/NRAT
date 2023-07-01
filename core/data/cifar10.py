@@ -25,7 +25,7 @@ def load_cifar10(data_dir, use_augmentation='base'):
     test_transform = transforms.Compose([transforms.ToTensor()])
     if use_augmentation == 'base':
         train_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(0.5), 
-                                              transforms.ToTensor()])     # 原版没有0.5这个比例,不过0.5是默认比例
+                                              transforms.ToTensor()])     
     else: 
         train_transform = test_transform
     
