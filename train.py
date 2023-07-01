@@ -63,7 +63,7 @@ seed(args.seed)
 #    DATA_DIR, BATCH_SIZE, BATCH_SIZE_VALIDATION, use_augmentation=args.augment, use_consistency=args.consistency, shuffle_train=True, 
 #    validation=False
 #)
-data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym)  # 是一个类
+data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym) 
 data_loader = data_loader.loadData()
 train_dataloader = data_loader['train_dataset']
 test_dataloader = data_loader['test_dataset']
@@ -84,7 +84,7 @@ if NUM_ADV_EPOCHS > 0:
     logger.log('Standard Accuracy-\tTest: {:2f}%.'.format(trainer.eval(test_dataloader)*100))
     
     #old_score = [0.0, 0.0]
-    old_score = [0.0] # 改成old_score只存test的clean_acc
+    old_score = [0.0] 
     logger.log('RST Adversarial training for {} epochs'.format(NUM_ADV_EPOCHS))
     trainer.init_optimizer(args.num_adv_epochs)
     test_adv_acc = 0.0    
@@ -124,7 +124,7 @@ for epoch in range(start_epoch, NUM_ADV_EPOCHS+1):
     #logger.log('Adversarial Accuracy-\tEval: {:.2f}%.'.format(eval_adv_acc*100))
     #epoch_metrics['eval_adversarial_acc'] = eval_adv_acc
     
-    #if eval_adv_acc >= old_score[1]:   old_score是对test的clean acc和eval_adv_acc 
+    #if eval_adv_acc >= old_score[1]:   
     #    old_score[0], old_score[1] = test_acc, eval_adv_acc
     #    trainer.save_model(WEIGHTS)
 
@@ -139,7 +139,7 @@ for epoch in range(start_epoch, NUM_ADV_EPOCHS+1):
         shutil.copyfile(WEIGHTS, os.path.join(LOG_DIR, f'weights-best-epoch{str(epoch)}.pt'))
 
     logger.log('Time taken: {}'.format(format_time(time.time()-start)))
-    # pandas 2.0以上append取消, 改用concat
+    
     metrics = metrics.append(pd.DataFrame(epoch_metrics, index=[0]), ignore_index=True) 
     metrics.to_csv(os.path.join(LOG_DIR, 'stats_adv.csv'), index=False)
 
