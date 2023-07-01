@@ -28,8 +28,7 @@ RL = NCEandRCE(1,1,10)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-SCHEDULERS = ['cyclic', 'step', 'cosine', 'cosinew']  # step就是100和150下降10倍
-
+SCHEDULERS = ['cyclic', 'step', 'cosine', 'cosinew']  
 
 class Trainer(object):
     """
@@ -76,7 +75,7 @@ class Trainer(object):
         Initialize optimizer and scheduler.
         """
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.params.lr, weight_decay=self.params.weight_decay, 
-                                         momentum=0.9)   # 去掉了Nesterov
+                                         momentum=0.9)   
         if num_epochs <= 0:
             return
         self.init_scheduler(num_epochs)
@@ -92,7 +91,7 @@ class Trainer(object):
             update_steps = int(np.floor(num_samples/self.params.batch_size) + 1)
             self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=self.params.lr, pct_start=0.25,
                                                                  steps_per_epoch=update_steps, epochs=int(num_epochs))
-        elif self.params.scheduler == 'step':   # 100和150的时候lr下降10倍
+        elif self.params.scheduler == 'step':  
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, gamma=0.1, milestones=[100, 150])    
         elif self.params.scheduler == 'cosine':
             self.scheduler = CosineLR(self.optimizer, max_lr=self.params.lr, epochs=int(num_epochs))
@@ -155,7 +154,7 @@ class Trainer(object):
         return dict(metrics.mean())
     
     
-    def standard_loss(self, x, y):     # 可能需要改, 正常训练非对抗训练
+    def standard_loss(self, x, y):     
         """
         Standard training.
         """
@@ -168,7 +167,7 @@ class Trainer(object):
         return loss, batch_metrics
     
     
-    def adversarial_loss(self, x, y):   # 可能改, 这个就是PGD-AT
+    def adversarial_loss(self, x, y):   
         """
         Adversarial training (Madry et al, 2017).
         """
@@ -194,7 +193,7 @@ class Trainer(object):
         return loss, batch_metrics
     
     
-    def trades_loss(self, x, y, beta):    # 可能改
+    def trades_loss(self, x, y, beta):    
         """
         TRADES training.
         """
@@ -204,7 +203,7 @@ class Trainer(object):
         return loss, batch_metrics  
 
     
-    def mart_loss(self, x, y, beta):   # 可能改
+    def mart_loss(self, x, y, beta):   
         """
         MART training.
         """
@@ -213,13 +212,13 @@ class Trainer(object):
                                         beta=beta, attack=self.params.attack)
         return loss, batch_metrics  
 
-    #def at_loss(self, x, y):   # 加的
+    #def at_loss(self, x, y):  
     #    loss, batch_metrics = at_loss(self.model, x, y, self.optimizer, step_size=self.params.attack_step, 
     #                                    epsilon=self.params.attack_eps, perturb_steps=self.params.attack_iter, 
     #                                    attack=self.params.attack)
     #    return loss, batch_metrics
 
-    def AT_APL_loss(self, x, y):   # PGD_AT加APL
+    def AT_APL_loss(self, x, y):  
         """
         Adversarial training (Madry et al, 2017).
         """
@@ -253,7 +252,7 @@ class Trainer(object):
                                         beta=beta, attack=self.params.attack)
         return loss, batch_metrics
 
-    def trades_apl_loss(self, x, y, beta):    # 可能改
+    def trades_apl_loss(self, x, y, beta):   
         """
         TRADES_APL training.
         """
