@@ -4,6 +4,7 @@ Code for NRAT: Towards Adversarial Training with Inherent Label Noise
 Python 3.6+  
 Pytorch 1.8.0  
 Torchvision 0.9.0  
+Pandas 1.2.4  
 # Usage
 NRAT+symmetric label noise for CIFAR10:  
 python train.py --log-dir 'trained_models' --desc 'NRAT_sym0.2' --lr 0.05 --beta 6.0 --NRAT --noise_rate 0.2  
