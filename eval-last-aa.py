@@ -24,7 +24,8 @@ from core.utils import Logger
 from core.utils import parser_eval
 from core.utils import seed
 
-
+import torchvision
+from torchvision import datasets, transforms
 
 # Setup
 
@@ -52,8 +53,11 @@ info = get_data_info(DATA_DIR)
 # BATCH_SIZE = args.batch_size
 # BATCH_SIZE_VALIDATION = args.batch_size_validation
 BATCH_SIZE = 128
-BATCH_SIZE_VALIDATION = 128
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+BATCH_SIZE_VALIDATION = 256
+
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
+kwargs = {'num_workers': 8, 'pin_memory': True} if use_cuda else {}
 
 logger.log('Using device: {}'.format(device))
 
@@ -61,8 +65,17 @@ logger.log('Using device: {}'.format(device))
 # Load data
 
 seed(args.seed)
-_, _, train_dataloader, test_dataloader = load_data(DATA_DIR, BATCH_SIZE, BATCH_SIZE_VALIDATION, use_augmentation=False, 
-                                                    shuffle_train=False)
+
+CIFAR_MEAN = [0.49139968, 0.48215827, 0.44653124]         # 这只是针对cifar的数值
+CIFAR_STD = [0.24703233, 0.24348505, 0.26158768]
+test_transform = transforms.Compose([
+                transforms.ToTensor(),
+               transforms.Normalize(CIFAR_MEAN, CIFAR_STD)])
+
+testset = torchvision.datasets.CIFAR10(root='./cifar-data', train=False, download=True, transform=test_transform)
+
+
+test_dataloader = torch.utils.data.DataLoader(testset, batch_size=256, shuffle=False, **kwargs)
 
 if args.train:
     logger.log('Evaluating on training set.')
