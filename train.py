@@ -12,7 +12,6 @@ import torch.nn as nn
 
 from core.data import get_data_info
 from core.data import load_data
-#from core.data import SEMISUP_DATASETS
 
 from core.utils import format_time
 from core.utils import Logger
@@ -28,8 +27,6 @@ from dataset import DatasetGenerator
 parse = parser_train()
 
 args = parse.parse_args()
-#assert args.data in SEMISUP_DATASETS, f'Only data in {SEMISUP_DATASETS} is supported!'
-
 
 DATA_DIR = os.path.join(args.data_dir, args.data)
 LOG_DIR = os.path.join(args.log_dir, args.desc)
@@ -59,17 +56,11 @@ torch.backends.cudnn.benchmark = True
 # Load data
 
 seed(args.seed)
-#train_dataset, test_dataset, train_dataloader, test_dataloader = load_data(
-#    DATA_DIR, BATCH_SIZE, BATCH_SIZE_VALIDATION, use_augmentation=args.augment, use_consistency=args.consistency, shuffle_train=True, 
-#    validation=False
-#)
-data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym) 
+
+data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym)  # 是一个类
 data_loader = data_loader.loadData()
 train_dataloader = data_loader['train_dataset']
 test_dataloader = data_loader['test_dataset']
-
-#del train_dataset, test_dataset
-
 
 # Adversarial Training
 
@@ -83,8 +74,7 @@ if NUM_ADV_EPOCHS > 0:
     metrics = pd.DataFrame()
     logger.log('Standard Accuracy-\tTest: {:2f}%.'.format(trainer.eval(test_dataloader)*100))
     
-    #old_score = [0.0, 0.0]
-    old_score = [0.0] 
+    old_score = [0.0] # store test_adv_acc 
     logger.log('RST Adversarial training for {} epochs'.format(NUM_ADV_EPOCHS))
     trainer.init_optimizer(args.num_adv_epochs)
     test_adv_acc = 0.0    
@@ -103,7 +93,7 @@ for epoch in range(start_epoch, NUM_ADV_EPOCHS+1):
         last_lr = trainer.scheduler.get_last_lr()[0]
     
     res = trainer.train(train_dataloader, epoch=epoch, adversarial=True)
-    test_acc = trainer.eval(test_dataloader)
+    test_acc = trainer.eval(test_dataloader)  # test_clean_acc
     
     logger.log('Loss: {:.4f}.\tLR: {:.4f}'.format(res['loss'], last_lr))
     if 'clean_acc' in res:
@@ -120,17 +110,10 @@ for epoch in range(start_epoch, NUM_ADV_EPOCHS+1):
         epoch_metrics.update({'test_adversarial_acc': test_adv_acc})
     else:
         logger.log('Adversarial Accuracy-\tTrain: {:.2f}%.'.format(res['adversarial_acc']*100))
-    #eval_adv_acc = trainer.eval(eval_dataloader, adversarial=True)
-    #logger.log('Adversarial Accuracy-\tEval: {:.2f}%.'.format(eval_adv_acc*100))
-    #epoch_metrics['eval_adversarial_acc'] = eval_adv_acc
     
-    #if eval_adv_acc >= old_score[1]:   
-    #    old_score[0], old_score[1] = test_acc, eval_adv_acc
-    #    trainer.save_model(WEIGHTS)
-
-    if test_acc >= old_score[0]:
-        old_score[0] = test_acc
-        trainer.save_model(WEIGHTS)
+    if test_adv_acc >= old_score[0]:
+        old_score[0] = test_adv_acc
+        trainer.save_model(WEIGHTS)   # best test_robust_acc
 
     trainer.save_model(os.path.join(LOG_DIR, 'weights-last.pt'))
     if epoch % 10 == 0:
@@ -139,12 +122,11 @@ for epoch in range(start_epoch, NUM_ADV_EPOCHS+1):
         shutil.copyfile(WEIGHTS, os.path.join(LOG_DIR, f'weights-best-epoch{str(epoch)}.pt'))
 
     logger.log('Time taken: {}'.format(format_time(time.time()-start)))
-    
+    # pandas 2.0 remove "append", use "concat" if your pandas is above 2.0
     metrics = metrics.append(pd.DataFrame(epoch_metrics, index=[0]), ignore_index=True) 
     metrics.to_csv(os.path.join(LOG_DIR, 'stats_adv.csv'), index=False)
 
-    
-    
+
 # Record metrics
 
 train_acc = res['clean_acc'] if 'clean_acc' in res else trainer.eval(train_dataloader)
