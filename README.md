@@ -1,5 +1,5 @@
 # NRAT
-Code for NRAT: Towards Adversarial Training with Inherent Label Noise
+Code for paper "NRAT: Towards Adversarial Training with Inherent Label Noise"
 # Requisite
 Python 3.6+  
 Pytorch 1.8.0  
