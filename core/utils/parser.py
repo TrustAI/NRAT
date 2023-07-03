@@ -14,7 +14,6 @@ def parser_train():
     """
     parser = argparse.ArgumentParser(description='Standard + Adversarial Training.')
 
-    # parser.add_argument('--augment', type=str2bool, default=True, help='Augment training set.')
     parser.add_argument('--augment', type=str, default='base', choices=['none', 'base', 'cutout', 'autoaugment', 'randaugment', 'idbh'], help='Augment training set.')
 
     parser.add_argument('--batch-size', type=int, default=128, help='Batch size for training.')
@@ -28,21 +27,19 @@ def parser_train():
                         help='Description of experiment. It will be used to name directories.')
 
     parser.add_argument('-m', '--model', choices=MODELS, default='resnet18', help='Model architecture to be used.')
-    
+
     parser.add_argument('--normalize', type=str2bool, default=False, help='Normalize input.')
     parser.add_argument('--pretrained-file', type=str, default=None, help='Pretrained weights file name.')
 
     parser.add_argument('-na', '--num-adv-epochs', type=int, default=200, help='Number of adversarial training epochs.')
     parser.add_argument('--adv-eval-freq', type=int, default=1, help='Adversarial evaluation frequency (in epochs).')
-  
+    # test_adv_acc frequence
     parser.add_argument('--beta', default=None, type=float, help='Stability regularization, i.e., 1/lambda in TRADES.')
     
     parser.add_argument('--lr', type=float, default=0.1, help='Learning rate for optimizer (SGD).')
     parser.add_argument('--weight-decay', type=float, default=5e-4, help='Optimizer (SGD) weight decay.')
     parser.add_argument('--scheduler', choices=SCHEDULERS, default='step', help='Type of scheduler.')
-    #parser.add_argument('--nesterov', type=str2bool, default=True, help='Use Nesterov momentum.')  一个SGD里的trick
-    #parser.add_argument('--clip-grad', type=float, default=None, help='Gradient norm clipping.')
-
+   
     parser.add_argument('-a', '--attack', type=str, choices=ATTACKS, default='linf-pgd', help='Type of attack.')
     parser.add_argument('--attack-eps', type=str2float, default=8/255, help='Epsilon for the attack.')
     parser.add_argument('--attack-step', type=str2float, default=2/255, help='Step size for PGD attack.')
@@ -51,15 +48,8 @@ def parser_train():
 
     parser.add_argument('--debug', action='store_true', default=False, 
                         help='Debug code. Run 1 epoch of training and evaluation.')
-    parser.add_argument('--mart', action='store_true', default=False, help='MART training.')
-    #parser.add_argument('--mart_apl', action='store_true', default=False, help='MART_APL training.')
-    #parser.add_argument('--trades_apl', action='store_true', default=False, help='TRADES_APL training.')
+
     parser.add_argument('--NRAT', action='store_true', default=False, help='NRAT training.')
-    
-    #parser.add_argument('--at', action='store_true', default=False, help='AT training.')
-    #parser.add_argument('--unsup-fraction', type=float, default=0.7, help='Ratio of unlabelled data to labelled data.')
-    #parser.add_argument('--aux-data-filename', type=str, help='Path to additional Tiny Images data.', 
-              #          default='/cluster/scratch/rarade/cifar10s/ti_500K_pseudo_labeled.pickle')
     
     parser.add_argument('--seed', type=int, default=1, help='Random seed.')
 
@@ -70,12 +60,6 @@ def parser_train():
 
     ### Resume
     parser.add_argument('--resume_path', default='', type=str)
-
-    ### Our methods
-    #parser.add_argument('--LSE', action='store_true', default=False, help='LSE training.')
-    #parser.add_argument('--ls', type=float, default=0.1, help='label smoothing.')
-    #parser.add_argument('--clip_value', default=0, type=float)
-    #parser.add_argument('--CutMix', action='store_true', default=False, help='use CutMix.')
     
     # noisy labels
     parser.add_argument('--apl', action='store_true', default=False)
