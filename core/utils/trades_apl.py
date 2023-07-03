@@ -21,12 +21,12 @@ def l2_norm(x):
 
 
 def trades_apl_loss(model, x_natural, y, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=4.0, 
-                attack='linf-pgd'):      
+                attack='linf-pgd'):       
     """
     TRADES training (Zhang et al, 2019).
     """
     # define KL-loss
-    criterion_kl = nn.KLDivLoss(reduction='sum')  
+    criterion_kl = nn.KLDivLoss(reduction='sum')  # "size_average=False" in initial code
     model.eval()
     batch_size = len(x_natural)
     # generate adversarial example
@@ -81,7 +81,7 @@ def trades_apl_loss(model, x_natural, y, optimizer, step_size=0.003, epsilon=0.0
     # calculate robust loss
     logits_natural = model(x_natural)
     logits_adv = model(x_adv)
-    loss_natural = RL(logits_natural, y)  
+    loss_natural = RL(logits_natural, y)  # CE -> RL
     loss_robust = (1.0 / batch_size) * criterion_kl(F.log_softmax(logits_adv, dim=1),
                                                     F.softmax(logits_natural, dim=1))
     loss = loss_natural + beta * loss_robust
