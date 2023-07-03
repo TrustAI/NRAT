@@ -15,10 +15,6 @@ from core.models import create_model
 from .context import ctx_noparamgrad_and_eval
 from .utils import seed
 
-from .mart import mart_loss
-#from .at import at_loss
-#from .rst import CosineLR
-from .trades import trades_loss
 from .APLloss import NCEandRCE 
 from .trades_apl import trades_apl_loss
 from .NRAT import NRAT_loss
@@ -29,6 +25,7 @@ RL = NCEandRCE(1,1,10)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 SCHEDULERS = ['cyclic', 'step', 'cosine', 'cosinew']  
+
 
 class Trainer(object):
     """
@@ -91,7 +88,7 @@ class Trainer(object):
             update_steps = int(np.floor(num_samples/self.params.batch_size) + 1)
             self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=self.params.lr, pct_start=0.25,
                                                                  steps_per_epoch=update_steps, epochs=int(num_epochs))
-        elif self.params.scheduler == 'step':  
+        elif self.params.scheduler == 'step':   
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, gamma=0.1, milestones=[100, 150])    
         elif self.params.scheduler == 'cosine':
             self.scheduler = CosineLR(self.optimizer, max_lr=self.params.lr, epochs=int(num_epochs))
@@ -123,26 +120,13 @@ class Trainer(object):
                 elif self.params.beta is not None and self.params.apl:                         # trades+apl
                     loss, batch_metrics = self.trades_apl_loss(x, y, beta=self.params.beta)
 
-                elif self.params.beta is not None and self.params.mart:                        # mart
-                    loss, batch_metrics = self.mart_loss(x, y, beta=self.params.beta)
-
-                elif self.params.beta is not None:                        # trades
-                    loss, batch_metrics = self.trades_loss(x, y, beta=self.params.beta)
-
-                elif self.params.beta is None and self.params.apl:                        # AT+apl
-                    loss, batch_metrics = self.AT_APL_loss(x, y)
-                
-                elif self.params.beta is None:                        # AT
-                    loss, batch_metrics = self.adversarial_loss(x, y)
-
                 else:
                     print('wrong loss function')
             else:
                 loss, batch_metrics = self.standard_loss(x, y)
                 
             loss.backward()
-#            if self.params.clip_grad:
-#                nn.utils.clip_grad_norm_(self.model.parameters(), self.params.clip_grad)
+#            
             self.optimizer.step()
             if self.params.scheduler in ['cyclic']:
                 self.scheduler.step()
@@ -212,12 +196,7 @@ class Trainer(object):
                                         beta=beta, attack=self.params.attack)
         return loss, batch_metrics  
 
-    #def at_loss(self, x, y):  
-    #    loss, batch_metrics = at_loss(self.model, x, y, self.optimizer, step_size=self.params.attack_step, 
-    #                                    epsilon=self.params.attack_eps, perturb_steps=self.params.attack_iter, 
-    #                                    attack=self.params.attack)
-    #    return loss, batch_metrics
-
+   
     def AT_APL_loss(self, x, y):  
         """
         Adversarial training (Madry et al, 2017).
@@ -243,7 +222,7 @@ class Trainer(object):
             batch_metrics.update({'adversarial_acc': accuracy(y, preds)})    
         return loss, batch_metrics
     
-    def mart_apl_loss(self, x, y, beta):   # mart+apl
+    def mart_apl_loss(self, x, y, beta):   
         """
         MART_APL training.
         """
@@ -252,7 +231,7 @@ class Trainer(object):
                                         beta=beta, attack=self.params.attack)
         return loss, batch_metrics
 
-    def trades_apl_loss(self, x, y, beta):   
+    def trades_apl_loss(self, x, y, beta):    
         """
         TRADES_APL training.
         """
