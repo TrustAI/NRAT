@@ -18,8 +18,6 @@ def squared_l2_norm(x):
 def l2_norm(x):
     return squared_l2_norm(x).sqrt()
 
-
-# sym kl
 def symmkl(logit1, logit2):
     criterion_kl = nn.KLDivLoss(reduction='sum')
     loss_1 = criterion_kl(F.log_softmax(logit1, dim=1), 
@@ -30,17 +28,6 @@ def symmkl(logit1, logit2):
                      
     return 0.5*(loss_1+loss_2)
 
-'''
-def _jensen_shannon_div(logit1, logit2, T=1.):
-    prob1 = F.softmax(logit1/T, dim=1)
-    prob2 = F.softmax(logit2/T, dim=1)
-    mean_prob = 0.5 * (prob1 + prob2)
-
-    logsoftmax = torch.log(mean_prob.clamp(min=1e-8))
-    jsd = F.kl_div(logsoftmax, prob1, reduction='batchmean')
-    jsd += F.kl_div(logsoftmax, prob2, reduction='batchmean')
-    return jsd * 0.5
-'''
 
 def NRAT_loss(model, x_natural, y, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=4.0, 
                 attack='linf-pgd'):
