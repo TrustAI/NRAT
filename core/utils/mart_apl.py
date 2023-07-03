@@ -46,7 +46,7 @@ def mart_apl_loss(model, x_natural, y, optimizer, step_size=0.007, epsilon=0.031
     adv_probs = F.softmax(logits_adv, dim=1)
     tmp1 = torch.argsort(adv_probs, dim=1)[:, -2:]
     new_y = torch.where(tmp1[:, -1] == y, tmp1[:, -2], tmp1[:, -1])
-    loss_adv = RL(logits_adv, y) # + F.nll_loss(torch.log(1.0001 - adv_probs + 1e-12), new_y)
+    loss_adv = RL(logits_adv, y)
 
     nat_probs = F.softmax(logits, dim=1)
     true_probs = torch.gather(nat_probs, 1, (y.unsqueeze(1)).long()).squeeze()
