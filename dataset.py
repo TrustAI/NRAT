@@ -93,7 +93,7 @@ class DatasetGenerator():
     def __init__(self,
                  train_batch_size=128,
                  eval_batch_size=256,
-                 data_path='cifar-data/cifar10/',
+                 data_path='cifar10/',
                  seed=1,
                  num_of_workers=4,
                  asym=False,
@@ -124,9 +124,9 @@ class DatasetGenerator():
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(CIFAR_MEAN, CIFAR_STD)])   # normalize
+            transforms.Normalize(CIFAR_MEAN, CIFAR_STD)])
 
-        test_transform = transforms.Compose([                   
+        test_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(CIFAR_MEAN, CIFAR_STD)])
 
