@@ -1,12 +1,7 @@
 import torch
 
 from .resnet import Normalization
-#from .preact_resnet import preact_resnet
 from .resnet import resnet
-#from .wideresnet import wideresnet
-
-#from .preact_resnetwithswish import preact_resnetwithswish
-#from .wideresnetwithswish import wideresnetwithswish
 
 from core.data import DATASETS
 
