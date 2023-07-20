@@ -57,7 +57,7 @@ torch.backends.cudnn.benchmark = True
 
 seed(args.seed)
 
-data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym)  # 是一个类
+data_loader = DatasetGenerator(seed=args.seed, noise_rate=args.noise_rate, asym=args.asym)
 data_loader = data_loader.loadData()
 train_dataloader = data_loader['train_dataset']
 test_dataloader = data_loader['test_dataset']
